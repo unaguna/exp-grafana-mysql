@@ -1,0 +1,30 @@
+# versionは3系が最新版で、versionによって書き方が異なる
+version: "3"
+volumes:
+  exp-grafana-mysql-grafana-volume-DB:
+    driver: 'local'
+  exp-grafana-mysql-grafana-volume-etc:
+    driver: 'local'
+services:
+  mysql:
+    build: ./mysql/
+    volumes:
+      - ./mysql/db:/docker-entrypoint-initdb.d
+    image: exp-grafana-mysql-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+    networks:
+      - exp-grafana-mysql-network
+  grafana:
+    build: ./grafana/
+    volumes:
+      - exp-grafana-mysql-grafana-volume-DB:/var/lib/grafana
+      - exp-grafana-mysql-grafana-volume-etc:/etc/grafana
+    image: exp-grafana-mysql-grafana
+    networks:
+      - exp-grafana-mysql-network
+    ports:
+      - "127.0.0.1:3000:3000"
+networks:
+  exp-grafana-mysql-network:
+    external: true
